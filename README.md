@@ -4,7 +4,7 @@ This database includes 5,824 species and over 3 million documneted accounts of o
 Yosemite, Yellowstone, Bryce Canyon and The Great Smoky Mountains.
 
 The figure below is the final sorting of all species observed acrosss the four "most sensitive classifications"
-Visiual information can be deceptive so I emplor everyone to explore the data and code to run their own comparative analysis!
+Visiual information can be deceptive so I implor everyone to explore the data and code to run their own comparative analysis!
 
 I have left example lines of code in the script for your own exploration, for example:
 You can use script prompts to isolate and identify any individual species by refering to it's common or
