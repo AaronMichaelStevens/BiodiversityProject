@@ -1,0 +1,92 @@
+import pandas as pd
+import numpy as np
+import string
+from itertools import chain
+from collections import Counter
+from scipy.stats import chi2_contingency
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+
+# Load data
+species = pd.read_csv('/Users/aaronstevens/Downloads/biodiversity-solution/species_info.csv', encoding='utf-8')
+observations = pd.read_csv('/Users/aaronstevens/Downloads/biodiversity-solution/observations.csv', encoding='utf-8')
+
+# Data Overview
+print(f"species shape: {species.shape}")
+print(f"observations shape: {observations.shape}")
+print(f"number of categories: {species.category.nunique()}")
+print(f"categories: {list(species.category.unique())}")
+print(f"number of conservation statuses: {species.conservation_status.nunique()}")
+print(f"unique conservation statuses: {list(species.conservation_status.unique())}")
+print(f"na values in conservation_status: {species.conservation_status.isna().sum()}")
+print(f"number of parks: {observations.park_name.nunique()}")
+print(f"unique parks: {list(observations.park_name.unique())}")
+print(f"total observations: {observations.observations.sum()}")
+
+# Fill NaN values in conservation_status
+species.fillna('No Intervention', inplace=True)
+
+# Conservation Status Count
+conservation_counts = species.groupby("conservation_status").size()
+print(conservation_counts)
+
+# Protected species analysis
+species['is_protected'] = species.conservation_status != 'No Intervention'
+category_counts = (
+    species.groupby(['category', 'is_protected'])
+    .scientific_name.nunique()
+    .reset_index()
+    .pivot(columns='is_protected', index='category', values='scientific_name')
+    .reset_index()
+)
+category_counts.columns = ['category', 'not_protected', 'protected']
+category_counts['percent_protected'] = (
+    category_counts.protected / (category_counts.protected + category_counts.not_protected) * 100
+)
+
+# Chi-square tests
+contingency1 = [[30, 146], [75, 413]]
+contingency2 = [[30, 146], [5, 73]]
+print(chi2_contingency(contingency1))
+print(chi2_contingency(contingency2))
+
+# Text Processing
+def remove_punctuations(text):
+    return text.translate(str.maketrans('', '', string.punctuation))
+
+common_names = (
+    species[species.category == "Mammal"]
+    .common_names
+    .apply(remove_punctuations)
+    .str.split()
+    .tolist()
+)
+
+# Remove duplicate words per row
+clean_rows = [list(dict.fromkeys(row)) for row in common_names]
+
+# Flatten list
+res = list(chain.from_iterable(clean_rows))
+
+# Count word occurrences
+word_counts = Counter(res)
+print(pd.DataFrame(word_counts.most_common(10), columns=['Word', 'Count']))
+
+# Identify bat species
+species['is_bat'] = species.common_names.str.contains(r"\bBat\b", na=False)
+
+# Plot conservation status distribution
+conservation_category = species[species.conservation_status != "No Intervention"]\
+    .groupby(["conservation_status", "category"])['scientific_name']\
+    .count()\
+    .unstack()
+
+ax = conservation_category.plot(kind='bar', figsize=(8,6), stacked=True)
+ax.set_xlabel("Conservation Status")
+ax.set_ylabel("Number of Species")
+plt.title("Conservation Status by Category")
+plt.legend(title="Category")
+plt.show()
+
+print(species.head(10))
