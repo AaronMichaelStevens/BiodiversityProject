@@ -1,1 +1,4 @@
 This code depolys a statiscial analysis via chi square distobution to sort species classifications into their respective levels of endargment by analyzing the U.S. National Park Services public observation report database.
+This database includes over 5,000 species and over 23,000 documneted accounts of observations.
+The data can be explored via script prompts to isolate and identify any individual species by refering to it's common or
+scientific name.
