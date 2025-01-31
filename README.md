@@ -7,3 +7,4 @@ scientific name.
 ^^^^^^^^   Refer to the "# Identify bat species" on Line 76 of the code for an example syntax of prompting individual species search.
 interactive GUI to come,
 Thanks for checking out the code!
+<img width="877" alt="image" src="https://github.com/user-attachments/assets/4060c276-f406-4a2f-a49f-b94083ad2e84" />
